@@ -1,0 +1,352 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gateway {
+  ASAAS
+  STRIPE
+}
+
+enum PlatformRole {
+  ADMIN
+  CUSTOMER
+}
+
+enum CompanyRole {
+  OWNER
+  FINANCE
+  TECHNICAL
+}
+
+enum AppLocale {
+  PT_BR
+  EN
+}
+
+enum PlanType {
+  RECURRING
+  ONE_TIME
+}
+
+enum BillingInterval {
+  MONTH
+  YEAR
+}
+
+enum SubscriptionStatus {
+  INCOMPLETE
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MessageVisibility {
+  PUBLIC
+  INTERNAL
+}
+
+enum WebhookStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+model Company {
+  id               String    @id @default(cuid())
+  name             String
+  taxId            String
+  country          String
+  currency         String
+  locale           AppLocale @default(PT_BR)
+  gateway          Gateway
+  asaasCustomerId  String?
+  stripeCustomerId String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  users         User[]
+  invitations   Invitation[]
+  subscriptions Subscription[]
+  invoices      Invoice[]
+  tickets       Ticket[]
+  auditLogs     AuditLog[]
+
+  @@unique([country, taxId])
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String
+  platformRole  PlatformRole
+  companyId     String?
+  companyRole   CompanyRole?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  company           Company?        @relation(fields: [companyId], references: [id])
+  accounts          Account[]
+  sessions          Session[]
+  invitationsSent   Invitation[]    @relation("InvitedBy")
+  ticketsCreated    Ticket[]        @relation("TicketAuthor")
+  messages          TicketMessage[]
+  auditLogs         AuditLog[]
+  passwordResets    PasswordReset[]
+  loginAttempts     LoginAttempt[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Invitation {
+  id          String      @id @default(cuid())
+  companyId   String
+  email       String
+  companyRole CompanyRole
+  tokenHash   String      @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  invitedById String
+  createdAt   DateTime    @default(now())
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invitedBy User    @relation("InvitedBy", fields: [invitedById], references: [id])
+
+  @@index([companyId, email])
+}
+
+model PasswordReset {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  userId    String?
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email, createdAt])
+}
+
+model Plan {
+  id              String           @id @default(cuid())
+  name            String
+  description     String
+  type            PlanType
+  interval        BillingInterval?
+  active          Boolean          @default(true)
+  stripeProductId String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  prices        PlanPrice[]
+  subscriptions Subscription[]
+  pendingFor    Subscription[] @relation("PendingPlan")
+  invoices      Invoice[]
+}
+
+model PlanPrice {
+  id            String @id @default(cuid())
+  planId        String
+  currency      String
+  amountMinor   Int
+  stripePriceId String?
+  plan          Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, currency])
+}
+
+model Subscription {
+  id                     String             @id @default(cuid())
+  companyId              String
+  planId                 String
+  pendingPlanId          String?
+  pendingPlanEffectiveAt DateTime?
+  gateway                Gateway
+  externalId             String?
+  checkoutUrl            String?
+  status                 SubscriptionStatus @default(INCOMPLETE)
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  cancelAt               DateTime?
+  canceledAt             DateTime?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  company     Company   @relation(fields: [companyId], references: [id])
+  plan        Plan      @relation(fields: [planId], references: [id])
+  pendingPlan Plan?     @relation("PendingPlan", fields: [pendingPlanId], references: [id])
+  invoices    Invoice[]
+
+  @@unique([gateway, externalId])
+  @@index([companyId])
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  companyId      String
+  subscriptionId String?
+  planId         String?
+  gateway        Gateway
+  externalId     String?
+  amountMinor    Int
+  currency       String
+  status         InvoiceStatus @default(OPEN)
+  dueDate        DateTime?
+  paymentUrl     String?
+  pdfUrl         String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  company      Company       @relation(fields: [companyId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+  plan         Plan?         @relation(fields: [planId], references: [id])
+
+  @@unique([gateway, externalId])
+  @@index([companyId])
+}
+
+model Ticket {
+  id          String         @id @default(cuid())
+  companyId   String
+  subject     String
+  priority    TicketPriority
+  status      TicketStatus   @default(OPEN)
+  createdById String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  company   Company         @relation(fields: [companyId], references: [id])
+  createdBy User            @relation("TicketAuthor", fields: [createdById], references: [id])
+  messages  TicketMessage[]
+
+  @@index([companyId, status])
+}
+
+model TicketMessage {
+  id         String            @id @default(cuid())
+  ticketId   String
+  authorId   String
+  body       String
+  visibility MessageVisibility @default(PUBLIC)
+  createdAt  DateTime          @default(now())
+
+  ticket      Ticket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author      User         @relation(fields: [authorId], references: [id])
+  attachments Attachment[]
+}
+
+model Attachment {
+  id              String   @id @default(cuid())
+  ticketMessageId String
+  storageKey      String
+  filename        String
+  contentType     String
+  size            Int
+  createdAt       DateTime @default(now())
+
+  message TicketMessage @relation(fields: [ticketMessageId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  companyId  String?
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  actor   User?    @relation(fields: [actorId], references: [id])
+  company Company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId, createdAt])
+  @@index([createdAt])
+}
+
+model WebhookEvent {
+  id         String        @id @default(cuid())
+  gateway    Gateway
+  externalId String
+  payload    Json
+  status     WebhookStatus @default(PENDING)
+  attempts   Int           @default(0)
+  lastError  String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@unique([gateway, externalId])
+}

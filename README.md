@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portal de assinaturas
 
-## Getting Started
+Portal para empresas clientes gerenciarem assinaturas, faturas e chamados, com painel administrativo. Brasil usa Asaas (BRL). Os demais países usam Stripe. O gateway da empresa é fixo e o cartão só é digitado na página hospedada do provedor.
 
-First, run the development server:
+## Stack
+
+Next.js, TypeScript, Tailwind, PostgreSQL, Prisma, Auth.js, pg-boss, Resend e Vitest.
+
+## Subir localmente
+
+1. Copie o ambiente e suba o Postgres:
+
+```bash
+copy .env.example .env
+docker compose up -d
+```
+
+2. Gere o client, aplique o schema e crie o admin:
+
+```bash
+npm install
+npx prisma migrate dev --name init
+npm run db:seed
+```
+
+`ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env` definem o primeiro administrador. Não há cadastro público.
+
+3. Rode a aplicação:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O processo do Next sobe o worker da fila (`START_WORKER` diferente de `false`). Em produção, deixe `START_WORKER=false` na web e rode `npm run worker` em outro processo.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variáveis
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Veja `.env.example`. Segredos de Stripe, Asaas, Resend e storage ficam só no ambiente.
 
-## Learn More
+- `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET`: modo teste do Stripe.
+- `ASAAS_API_KEY` e `ASAAS_WEBHOOK_TOKEN`: sandbox (`ASAAS_API_URL` já aponta para a API sandbox).
+- `RESEND_API_KEY` vazio: o worker registra o e-mail no log, e a tela mostra o link de convite para o admin.
+- `STORAGE_DRIVER=local` grava anexos em `./uploads`. Com `STORAGE_DRIVER=s3`, use um bucket compatível (R2) e as variáveis `S3_*`.
 
-To learn more about Next.js, take a look at the following resources:
+## Webhooks no sandbox
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+O handler só valida e enfileira. Duplicata do mesmo id externo responde 200 sem processar de novo.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Stripe, com a CLI apontando para a rota local:
 
-## Deploy on Vercel
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Copie o `whsec_...` para `STRIPE_WEBHOOK_SECRET`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Asaas sandbox: cadastre o webhook `https://<seu-tunel>/api/webhooks/asaas` com o mesmo valor de `ASAAS_WEBHOOK_TOKEN` no header `asaas-access-token`. Um túnel (cloudflared ou ngrok) é necessário para o Asaas alcançar a máquina.
+
+Enquanto o webhook não chega, a lista de faturas tem **Atualizar do gateway**, que lê as cobranças pela camada `PaymentGateway`.
+
+## Regras úteis
+
+- Dono contrata, troca e cancela. Financeiro paga faturas. Técnico abre chamados e só lê serviços.
+- Troca de plano vale no próximo ciclo.
+- Cancelamento no Stripe segue até o fim do período. No Asaas o gateway encerra a assinatura.
+- O Asaas não tem catálogo de produtos. Sincronizar o plano envia USD/EUR ao Stripe e mantém o valor em BRL local.
+
+## Testes
+
+```bash
+npm test
+```
+
+Cobrem permissões, isolamento por empresa, regras de gateway, idempotência de webhook e os adaptadores com clientes falsos.
+
+## Fora desta entrega
+
+MRR, régua de inadimplência, reconciliação agendada, 2FA, nota fiscal, WhatsApp, FAQ e API pública.

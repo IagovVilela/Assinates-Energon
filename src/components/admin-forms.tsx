@@ -1,0 +1,129 @@
+"use client";
+
+import { useActionState } from "react";
+import { useTranslations } from "next-intl";
+
+import { createCompanyAction, inviteUserAction, savePlanAction } from "@/server/actions/admin-actions";
+import { COUNTRIES } from "@/lib/countries";
+
+function FormError({ code }: { code?: string }) {
+  const t = useTranslations("errors");
+  if (!code) {
+    return null;
+  }
+  return <p className="text-sm text-red-700">{t(code)}</p>;
+}
+
+export function CompanyForm() {
+  const t = useTranslations("admin");
+  const fields = useTranslations("fields");
+  const [state, action, pending] = useActionState(createCompanyAction, undefined);
+  return (
+    <form action={action} className="card flex max-w-xl flex-col gap-3">
+      <h1 className="text-xl font-semibold">{t("newCompany")}</h1>
+      <label>{fields("name")}<input name="name" required /></label>
+      <label>{fields("taxId")}<input name="taxId" required /></label>
+      <label>
+        {fields("country")}
+        <select name="country" defaultValue="BR">
+          {COUNTRIES.map((country) => (
+            <option key={country.code} value={country.code}>{country.name}</option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {fields("currency")}
+        <select name="currency" defaultValue="USD">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+        </select>
+      </label>
+      <label>
+        {fields("locale")}
+        <select name="locale" defaultValue="PT_BR">
+          <option value="PT_BR">pt-BR</option>
+          <option value="EN">en</option>
+        </select>
+      </label>
+      <label>{fields("ownerName")}<input name="ownerName" required /></label>
+      <label>{fields("ownerEmail")}<input name="ownerEmail" type="email" required /></label>
+      <FormError code={state?.error} />
+      <button type="submit" disabled={pending}>{t("newCompany")}</button>
+    </form>
+  );
+}
+
+export function InviteUserForm({ companyId }: { companyId: string }) {
+  const fields = useTranslations("fields");
+  const roles = useTranslations("roles");
+  const team = useTranslations("team");
+  const [state, action, pending] = useActionState(inviteUserAction, undefined);
+  return (
+    <form action={action} className="card flex flex-col gap-3">
+      <h2 className="font-semibold">{team("invite")}</h2>
+      <input type="hidden" name="companyId" value={companyId} />
+      <label>{fields("name")}<input name="name" required /></label>
+      <input name="email" type="email" required />
+      <select name="companyRole" defaultValue="TECHNICAL">
+        <option value="OWNER">{roles("OWNER")}</option>
+        <option value="FINANCE">{roles("FINANCE")}</option>
+        <option value="TECHNICAL">{roles("TECHNICAL")}</option>
+      </select>
+      <FormError code={state?.error} />
+      <button type="submit" disabled={pending}>{team("invite")}</button>
+    </form>
+  );
+}
+
+export function PlanForm({
+  plan,
+}: {
+  plan?: {
+    id: string;
+    name: string;
+    description: string;
+    type: "RECURRING" | "ONE_TIME";
+    interval: "MONTH" | "YEAR" | null;
+    active: boolean;
+    prices: { currency: string; amountMinor: number }[];
+  };
+}) {
+  const t = useTranslations("admin");
+  const fields = useTranslations("fields");
+  const planType = useTranslations("planType");
+  const interval = useTranslations("interval");
+  const [state, action, pending] = useActionState(savePlanAction, undefined);
+  const amount = (currency: string) => plan?.prices.find((price) => price.currency === currency)?.amountMinor ?? 0;
+  return (
+    <form action={action} className="card flex max-w-xl flex-col gap-3">
+      <h1 className="text-xl font-semibold">{plan ? plan.name : t("newPlan")}</h1>
+      {plan ? <input type="hidden" name="planId" value={plan.id} /> : null}
+      <label>{fields("name")}<input name="name" defaultValue={plan?.name} required /></label>
+      <label>{fields("description")}<textarea name="description" defaultValue={plan?.description} required /></label>
+      <label>
+        {fields("type")}
+        <select name="type" defaultValue={plan?.type ?? "RECURRING"}>
+          <option value="RECURRING">{planType("RECURRING")}</option>
+          <option value="ONE_TIME">{planType("ONE_TIME")}</option>
+        </select>
+      </label>
+      <label>
+        {fields("interval")}
+        <select name="interval" defaultValue={plan?.interval ?? "MONTH"}>
+          <option value="MONTH">{interval("MONTH")}</option>
+          <option value="YEAR">{interval("YEAR")}</option>
+        </select>
+      </label>
+      <label>BRL (centavos)<input name="brl" type="number" min={0} defaultValue={amount("BRL")} /></label>
+      <label>USD (cents)<input name="usd" type="number" min={0} defaultValue={amount("USD")} /></label>
+      <label>EUR (cents)<input name="eur" type="number" min={0} defaultValue={amount("EUR")} /></label>
+      <label className="flex items-center gap-2 text-sm">
+        <input className="w-auto" type="checkbox" name="active" defaultChecked={plan?.active ?? true} />
+        {fields("active")}
+      </label>
+      <p className="text-sm text-slate-600">{t("syncHint")}</p>
+      <FormError code={state?.error} />
+      <button type="submit" disabled={pending}>{t("newPlan")}</button>
+    </form>
+  );
+}

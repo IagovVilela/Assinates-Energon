@@ -1,0 +1,139 @@
+{
+  "appName": "Subscription portal",
+  "logout": "Sign out",
+  "save": "Save",
+  "loading": "Loading…",
+  "empty": "Nothing here yet.",
+  "confirm": "I confirm",
+  "nav": {
+    "overview": "Overview",
+    "subscriptions": "Subscriptions",
+    "invoices": "Invoices",
+    "tickets": "Support",
+    "team": "Team",
+    "companies": "Companies",
+    "plans": "Plans",
+    "audit": "Audit log",
+    "admin": "Administration"
+  },
+  "login": {
+    "title": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "forgot": "Forgot password",
+    "invalid": "Invalid email or password.",
+    "rate_limited": "Too many attempts. Wait a few minutes."
+  },
+  "forgot": {
+    "title": "Reset password",
+    "submit": "Send link",
+    "sent": "If the email exists, we sent a reset link.",
+    "back": "Back to sign in"
+  },
+  "reset": {
+    "title": "New password",
+    "submit": "Save password",
+    "invalid": "Invalid link or weak password. Use 8 characters, with a letter and a number."
+  },
+  "invite": {
+    "title": "Accept invitation",
+    "name": "Your name",
+    "submit": "Create access",
+    "invalid": "Invalid invitation or weak password."
+  },
+  "overview": {
+    "title": "Overview",
+    "subscriptions": "Subscriptions",
+    "nextCharges": "Upcoming charges",
+    "services": "Contracted services"
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "available": "Available plans",
+    "contract": "Subscribe",
+    "change": "Change plan",
+    "changeRule": "The change takes effect on the next cycle, on both gateways.",
+    "cancel": "Cancel subscription",
+    "cancelStripe": "On Stripe, access continues until the end of the current period.",
+    "cancelAsaas": "On Asaas, cancellation is confirmed by the gateway and ends the subscription.",
+    "pending": "Scheduled change",
+    "checkout": "Finish payment"
+  },
+  "invoices": {
+    "title": "Invoices",
+    "pay": "Pay",
+    "pdf": "PDF",
+    "sync": "Refresh from gateway",
+    "method": "Update payment method"
+  },
+  "tickets": {
+    "title": "Support",
+    "new": "Open ticket",
+    "subject": "Subject",
+    "message": "Message",
+    "priority": "Priority",
+    "reply": "Reply",
+    "internal": "Internal note",
+    "status": "Status",
+    "attachment": "Attachment"
+  },
+  "team": {
+    "title": "Team",
+    "invite": "Invite",
+    "link": "Invitation link"
+  },
+  "admin": {
+    "title": "Dashboard",
+    "newCompany": "New company",
+    "newPlan": "New plan",
+    "sync": "Sync catalog",
+    "syncHint": "USD and EUR are sent to Stripe. Asaas has no product catalog: the BRL amount is sent when the subscription is created.",
+    "manual": "Create subscription",
+    "companies": "Companies",
+    "plans": "Plans",
+    "audit": "Audit log",
+    "tickets": "Tickets"
+  },
+  "fields": {
+    "name": "Name",
+    "taxId": "Tax id",
+    "country": "Country",
+    "currency": "Currency",
+    "locale": "Language",
+    "ownerName": "Owner name",
+    "ownerEmail": "Owner email",
+    "description": "Description",
+    "type": "Type",
+    "interval": "Cycle",
+    "role": "Role",
+    "active": "Active"
+  },
+  "errors": {
+    "invalid": "Check the form and try again.",
+    "email_taken": "That email is already in use.",
+    "forbidden": "You cannot do that.",
+    "confirm": "Check the confirmation to continue.",
+    "gateway": "The gateway did not complete the operation.",
+    "not_found": "Record not found."
+  },
+  "status": {
+    "INCOMPLETE": "Awaiting payment",
+    "TRIALING": "Trial",
+    "ACTIVE": "Active",
+    "PAST_DUE": "Past due",
+    "CANCELED": "Canceled",
+    "DRAFT": "Draft",
+    "OPEN": "Open",
+    "PAID": "Paid",
+    "VOID": "Void",
+    "UNCOLLECTIBLE": "Uncollectible",
+    "IN_PROGRESS": "In progress",
+    "WAITING_CUSTOMER": "Waiting on customer",
+    "RESOLVED": "Resolved"
+  },
+  "priority": { "LOW": "Low", "MEDIUM": "Medium", "HIGH": "High" },
+  "roles": { "OWNER": "Owner", "FINANCE": "Finance", "TECHNICAL": "Technical", "ADMIN": "Admin" },
+  "planType": { "RECURRING": "Recurring", "ONE_TIME": "One-time" },
+  "interval": { "MONTH": "Monthly", "YEAR": "Yearly" }
+}

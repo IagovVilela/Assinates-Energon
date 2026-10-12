@@ -1,0 +1,139 @@
+{
+  "appName": "Portal de assinaturas",
+  "logout": "Sair",
+  "save": "Salvar",
+  "loading": "Carregando…",
+  "empty": "Nada por aqui ainda.",
+  "confirm": "Confirmo",
+  "nav": {
+    "overview": "Visão geral",
+    "subscriptions": "Assinaturas",
+    "invoices": "Faturas",
+    "tickets": "Suporte",
+    "team": "Equipe",
+    "companies": "Empresas",
+    "plans": "Planos",
+    "audit": "Auditoria",
+    "admin": "Administração"
+  },
+  "login": {
+    "title": "Entrar",
+    "email": "E-mail",
+    "password": "Senha",
+    "submit": "Entrar",
+    "forgot": "Esqueci a senha",
+    "invalid": "E-mail ou senha inválidos.",
+    "rate_limited": "Muitas tentativas. Espere alguns minutos."
+  },
+  "forgot": {
+    "title": "Recuperar senha",
+    "submit": "Enviar link",
+    "sent": "Se o e-mail existir, enviamos um link de redefinição.",
+    "back": "Voltar ao login"
+  },
+  "reset": {
+    "title": "Nova senha",
+    "submit": "Salvar senha",
+    "invalid": "Link inválido ou senha fraca. Use 8 caracteres, com letra e número."
+  },
+  "invite": {
+    "title": "Aceitar convite",
+    "name": "Seu nome",
+    "submit": "Criar acesso",
+    "invalid": "Convite inválido ou senha fraca."
+  },
+  "overview": {
+    "title": "Visão geral",
+    "subscriptions": "Assinaturas",
+    "nextCharges": "Próximas cobranças",
+    "services": "Serviços contratados"
+  },
+  "subscriptions": {
+    "title": "Assinaturas",
+    "available": "Planos disponíveis",
+    "contract": "Contratar",
+    "change": "Trocar de plano",
+    "changeRule": "A troca vale no próximo ciclo, nos dois gateways.",
+    "cancel": "Cancelar assinatura",
+    "cancelStripe": "No Stripe o acesso segue até o fim do período atual.",
+    "cancelAsaas": "No Asaas o cancelamento é confirmado pelo gateway e encerra a assinatura.",
+    "pending": "Troca agendada",
+    "checkout": "Concluir pagamento"
+  },
+  "invoices": {
+    "title": "Faturas",
+    "pay": "Pagar",
+    "pdf": "PDF",
+    "sync": "Atualizar do gateway",
+    "method": "Atualizar forma de pagamento"
+  },
+  "tickets": {
+    "title": "Suporte",
+    "new": "Abrir chamado",
+    "subject": "Assunto",
+    "message": "Mensagem",
+    "priority": "Prioridade",
+    "reply": "Responder",
+    "internal": "Nota interna",
+    "status": "Status",
+    "attachment": "Anexo"
+  },
+  "team": {
+    "title": "Equipe",
+    "invite": "Convidar",
+    "link": "Link do convite"
+  },
+  "admin": {
+    "title": "Painel",
+    "newCompany": "Nova empresa",
+    "newPlan": "Novo plano",
+    "sync": "Sincronizar catálogo",
+    "syncHint": "USD e EUR vão para o Stripe. O Asaas não tem catálogo: o valor em BRL é enviado na assinatura.",
+    "manual": "Criar assinatura",
+    "companies": "Empresas",
+    "plans": "Planos",
+    "audit": "Auditoria",
+    "tickets": "Chamados"
+  },
+  "fields": {
+    "name": "Nome",
+    "taxId": "Documento fiscal",
+    "country": "País",
+    "currency": "Moeda",
+    "locale": "Idioma",
+    "ownerName": "Nome do dono",
+    "ownerEmail": "E-mail do dono",
+    "description": "Descrição",
+    "type": "Tipo",
+    "interval": "Ciclo",
+    "role": "Papel",
+    "active": "Ativo"
+  },
+  "errors": {
+    "invalid": "Revise os dados e tente de novo.",
+    "email_taken": "Esse e-mail já está em uso.",
+    "forbidden": "Você não pode fazer isso.",
+    "confirm": "Marque a confirmação para continuar.",
+    "gateway": "O gateway não concluiu a operação.",
+    "not_found": "Registro não encontrado."
+  },
+  "status": {
+    "INCOMPLETE": "Aguardando pagamento",
+    "TRIALING": "Trial",
+    "ACTIVE": "Ativa",
+    "PAST_DUE": "Inadimplente",
+    "CANCELED": "Cancelada",
+    "DRAFT": "Rascunho",
+    "OPEN": "Aberta",
+    "PAID": "Paga",
+    "VOID": "Anulada",
+    "UNCOLLECTIBLE": "Incobrável",
+    "IN_PROGRESS": "Em andamento",
+    "WAITING_CUSTOMER": "Aguardando cliente",
+    "RESOLVED": "Resolvido"
+  },
+  "priority": { "LOW": "Baixa", "MEDIUM": "Média", "HIGH": "Alta" },
+  "roles": { "OWNER": "Dono", "FINANCE": "Financeiro", "TECHNICAL": "Técnico", "ADMIN": "Admin" },
+  "planType": { "RECURRING": "Recorrente", "ONE_TIME": "Avulso" },
+  "interval": { "MONTH": "Mensal", "YEAR": "Anual" }
+}

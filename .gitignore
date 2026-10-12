@@ -32,6 +32,13 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# local uploads
+/uploads
+
+# leftover scaffold from the initial create-next-app folder
+/assinantes-energon
 
 # vercel
 .vercel
