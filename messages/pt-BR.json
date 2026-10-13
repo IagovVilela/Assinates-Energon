@@ -111,7 +111,8 @@
   },
   "errors": {
     "invalid": "Revise os dados e tente de novo.",
-    "tax_id": "Informe um CPF ou CNPJ válido.",
+    "tax_id": "Informe um CPF ou CNPJ válido. Exemplo: 11.444.777/0001-61",
+    "email": "Informe um e-mail válido, como dono@empresa.com",
     "company_exists": "Já existe uma empresa com esse documento neste país.",
     "email_taken": "Esse e-mail já está em uso.",
     "forbidden": "Você não pode fazer isso.",

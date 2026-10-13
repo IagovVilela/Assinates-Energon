@@ -84,7 +84,7 @@ export function CompanyForm() {
         </select>
       </label>
       <label>{fields("ownerName")}<input name="ownerName" required autoComplete="name" /></label>
-      <label>{fields("ownerEmail")}<input name="ownerEmail" type="email" required autoComplete="email" inputMode="email" /></label>
+      <label>{fields("ownerEmail")}<input name="ownerEmail" type="text" required autoComplete="email" inputMode="email" placeholder="dono@empresa.com" /></label>
       <FormError code={state?.error} />
       <button type="submit" disabled={pending}>{t("newCompany")}</button>
     </form>

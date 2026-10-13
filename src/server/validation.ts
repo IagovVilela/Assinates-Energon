@@ -1,7 +1,15 @@
 import { z } from "zod";
 
+const emailField = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(3)
+  .max(160)
+  .regex(/^[^\s@]+@[^\s@]+$/);
+
 export const loginSchema = z.object({
-  email: z.email(),
+  email: emailField,
   password: z.string().min(1),
 });
 
@@ -12,7 +20,7 @@ export const passwordSchema = z
   .regex(/[0-9]/);
 
 export const inviteSchema = z.object({
-  email: z.email(),
+  email: emailField,
   name: z.string().trim().min(2).max(120),
   companyRole: z.enum(["OWNER", "FINANCE", "TECHNICAL"]),
 });
@@ -24,7 +32,7 @@ export const companySchema = z.object({
   currency: z.enum(["BRL", "USD", "EUR"]).optional(),
   locale: z.enum(["PT_BR", "EN"]),
   ownerName: z.string().trim().min(2).max(120),
-  ownerEmail: z.email(),
+  ownerEmail: emailField,
 });
 
 export const planSchema = z.object({

@@ -36,6 +36,13 @@ export async function createCompanyAction(_state: FormState, formData: FormData)
     ownerEmail: formData.get("ownerEmail"),
   });
   if (!parsed.success) {
+    const fields = parsed.error.flatten().fieldErrors;
+    if (fields.ownerEmail?.length) {
+      return { error: "email" };
+    }
+    if (fields.taxId?.length) {
+      return { error: "tax_id" };
+    }
     return { error: "invalid" };
   }
   const country = parsed.data.country.toUpperCase();
