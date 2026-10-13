@@ -3,10 +3,12 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 
+import { CompanyFields } from "@/components/admin-forms";
 import {
   acceptInviteAction,
   forgotPasswordAction,
   loginAction,
+  registerCompanyAction,
   resetPasswordAction,
 } from "@/server/actions/auth-actions";
 
@@ -35,7 +37,23 @@ export function LoginForm() {
       </label>
       <ErrorLine code={state?.error} />
       <button type="submit" disabled={pending}>{t("submit")}</button>
+      <a className="text-sm text-teal-800" href="/register">{t("createAccount")}</a>
       <a className="text-sm text-teal-800" href="/forgot-password">{t("forgot")}</a>
+    </form>
+  );
+}
+
+export function SignupForm() {
+  const t = useTranslations("signup");
+  const [state, action, pending] = useActionState(registerCompanyAction, undefined);
+  return (
+    <form action={action} className="card mx-auto flex max-w-xl flex-col gap-3">
+      <h1 className="text-xl font-semibold">{t("title")}</h1>
+      <p className="text-sm text-slate-600">{t("hint")}</p>
+      <CompanyFields withPassword />
+      <ErrorLine code={state?.error} />
+      <button type="submit" disabled={pending}>{t("submit")}</button>
+      <a className="text-sm text-teal-800" href="/login">{t("back")}</a>
     </form>
   );
 }

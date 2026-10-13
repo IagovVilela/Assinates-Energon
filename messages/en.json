@@ -22,6 +22,7 @@
     "password": "Password",
     "submit": "Sign in",
     "forgot": "Forgot password",
+    "createAccount": "Create a company account",
     "invalid": "Invalid email or password.",
     "rate_limited": "Too many attempts. Wait a few minutes."
   },
@@ -35,6 +36,16 @@
     "title": "New password",
     "submit": "Save password",
     "invalid": "Invalid link or weak password. Use 8 characters, with a letter and a number."
+  },
+  "signup": {
+    "title": "Create account",
+    "hint": "Register your company and sign in as the owner.",
+    "yourName": "Your name",
+    "email": "Your email",
+    "password": "Password",
+    "passwordHint": "Use at least 8 characters, with a letter and a number.",
+    "submit": "Create account",
+    "back": "I already have an account"
   },
   "invite": {
     "title": "Accept invitation",
@@ -113,6 +124,7 @@
     "invalid": "Check the form and try again.",
     "tax_id": "Enter a valid CPF or CNPJ. Example: 11.444.777/0001-61",
     "email": "Enter a valid email, such as owner@company.com",
+    "weak_password": "The password needs 8 characters, with a letter and a number.",
     "company_exists": "A company with this tax id already exists in this country.",
     "email_taken": "That email is already in use.",
     "forbidden": "You cannot do that.",

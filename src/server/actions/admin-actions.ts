@@ -3,17 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { Prisma } from "@prisma/client";
-
-import { isValidBrazilianTaxId, onlyDigits } from "@/lib/cnpj";
-import { currencyForCountry, gatewayForCountry } from "@/lib/countries";
 import { prisma } from "@/lib/prisma";
 import { writeAudit } from "@/server/audit";
 import { startCheckout, syncPlanCatalog } from "@/server/billing";
+import { registerCompany } from "@/server/companies";
 import { requireAdmin } from "@/server/current-user";
 import { createInvitation } from "@/server/invitations";
 import { can } from "@/server/permissions";
-import { companySchema, inviteSchema, planSchema } from "@/server/validation";
+import { inviteSchema, planSchema } from "@/server/validation";
 import type { FormState } from "@/server/actions/auth-actions";
 
 function pricesFrom(input: { brl: number; usd: number; eur: number }) {
@@ -26,68 +23,27 @@ function pricesFrom(input: { brl: number; usd: number; eur: number }) {
 
 export async function createCompanyAction(_state: FormState, formData: FormData): Promise<FormState> {
   const admin = await requireAdmin();
-  const parsed = companySchema.safeParse({
+  const registered = await registerCompany({
     name: formData.get("name"),
     taxId: formData.get("taxId"),
     country: formData.get("country"),
-    currency: formData.get("currency") || undefined,
+    currency: formData.get("currency"),
     locale: formData.get("locale"),
     ownerName: formData.get("ownerName"),
     ownerEmail: formData.get("ownerEmail"),
+  }, admin.id);
+  if ("error" in registered) {
+    return { error: registered.error };
+  }
+  const invite = await createInvitation({
+    companyId: registered.company.id,
+    email: registered.email,
+    companyRole: "OWNER",
+    invitedById: admin.id,
+    locale: registered.company.locale,
+    companyName: registered.company.name,
   });
-  if (!parsed.success) {
-    const fields = parsed.error.flatten().fieldErrors;
-    if (fields.ownerEmail?.length) {
-      return { error: "email" };
-    }
-    if (fields.taxId?.length) {
-      return { error: "tax_id" };
-    }
-    return { error: "invalid" };
-  }
-  const country = parsed.data.country.toUpperCase();
-  const taxId = country === "BR" ? onlyDigits(parsed.data.taxId) : parsed.data.taxId.trim();
-  if (country === "BR" && !isValidBrazilianTaxId(taxId)) {
-    return { error: "tax_id" };
-  }
-  const gateway = gatewayForCountry(country);
-  const currency = currencyForCountry(country, parsed.data.currency);
-  try {
-    const company = await prisma.company.create({
-      data: {
-        name: parsed.data.name,
-        taxId,
-        country,
-        currency,
-        locale: parsed.data.locale,
-        gateway,
-      },
-    });
-    await writeAudit({
-      actorId: admin.id,
-      companyId: company.id,
-      action: "company.created",
-      entityType: "Company",
-      entityId: company.id,
-    });
-    const invite = await createInvitation({
-      companyId: company.id,
-      email: parsed.data.ownerEmail,
-      companyRole: "OWNER",
-      invitedById: admin.id,
-      locale: company.locale,
-      companyName: company.name,
-    });
-    redirect(`/admin/companies/${company.id}?invite=${encodeURIComponent(invite.link)}`);
-  } catch (error) {
-    if (error instanceof Error && error.message === "EMAIL_TAKEN") {
-      return { error: "email_taken" };
-    }
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      return { error: "company_exists" };
-    }
-    throw error;
-  }
+  redirect(`/admin/companies/${registered.company.id}?invite=${encodeURIComponent(invite.link)}`);
 }
 
 export async function inviteUserAction(_state: FormState, formData: FormData): Promise<FormState> {

@@ -23,7 +23,7 @@ npx prisma migrate dev --name init
 npm run db:seed
 ```
 
-`ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env` definem o primeiro administrador. Não há cadastro público.
+`ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env` definem o primeiro administrador. O cliente cria a própria empresa em `/register`.
 
 3. Rode a aplicação:
 

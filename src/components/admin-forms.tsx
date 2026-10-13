@@ -22,10 +22,9 @@ function FormError({ code }: { code?: string }) {
   return <p className="text-sm text-red-700">{t(code)}</p>;
 }
 
-export function CompanyForm() {
-  const t = useTranslations("admin");
+export function CompanyFields({ withPassword = false }: { withPassword?: boolean }) {
   const fields = useTranslations("fields");
-  const [state, action, pending] = useActionState(createCompanyAction, undefined);
+  const signup = useTranslations("signup");
   const [country, setCountry] = useState("BR");
   const [currency, setCurrency] = useState("BRL");
   const [taxId, setTaxId] = useState("");
@@ -41,8 +40,7 @@ export function CompanyForm() {
   }
 
   return (
-    <form action={action} className="card flex max-w-xl flex-col gap-3">
-      <h1 className="text-xl font-semibold">{t("newCompany")}</h1>
+    <>
       <label>{fields("name")}<input name="name" required autoComplete="organization" /></label>
       <label>
         {national ? "CPF ou CNPJ" : fields("taxId")}
@@ -83,8 +81,26 @@ export function CompanyForm() {
           <option value="EN">en</option>
         </select>
       </label>
-      <label>{fields("ownerName")}<input name="ownerName" required autoComplete="name" /></label>
-      <label>{fields("ownerEmail")}<input name="ownerEmail" type="text" required autoComplete="email" inputMode="email" placeholder="dono@empresa.com" /></label>
+      <label>{withPassword ? signup("yourName") : fields("ownerName")}<input name="ownerName" required autoComplete="name" /></label>
+      <label>{withPassword ? signup("email") : fields("ownerEmail")}<input name="ownerEmail" type="text" required autoComplete="email" inputMode="email" placeholder="dono@empresa.com" /></label>
+      {withPassword ? (
+        <label>
+          {signup("password")}
+          <input name="password" type="password" required autoComplete="new-password" minLength={8} />
+          <span className="mt-1 block text-xs text-slate-600">{signup("passwordHint")}</span>
+        </label>
+      ) : null}
+    </>
+  );
+}
+
+export function CompanyForm() {
+  const t = useTranslations("admin");
+  const [state, action, pending] = useActionState(createCompanyAction, undefined);
+  return (
+    <form action={action} className="card flex max-w-xl flex-col gap-3">
+      <h1 className="text-xl font-semibold">{t("newCompany")}</h1>
+      <CompanyFields />
       <FormError code={state?.error} />
       <button type="submit" disabled={pending}>{t("newCompany")}</button>
     </form>

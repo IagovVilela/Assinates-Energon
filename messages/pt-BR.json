@@ -22,6 +22,7 @@
     "password": "Senha",
     "submit": "Entrar",
     "forgot": "Esqueci a senha",
+    "createAccount": "Criar conta da empresa",
     "invalid": "E-mail ou senha inválidos.",
     "rate_limited": "Muitas tentativas. Espere alguns minutos."
   },
@@ -35,6 +36,16 @@
     "title": "Nova senha",
     "submit": "Salvar senha",
     "invalid": "Link inválido ou senha fraca. Use 8 caracteres, com letra e número."
+  },
+  "signup": {
+    "title": "Criar conta",
+    "hint": "Cadastre sua empresa e já entre no portal como dono.",
+    "yourName": "Seu nome",
+    "email": "Seu e-mail",
+    "password": "Senha",
+    "passwordHint": "Use no mínimo 8 caracteres, com letra e número.",
+    "submit": "Criar conta",
+    "back": "Já tenho conta"
   },
   "invite": {
     "title": "Aceitar convite",
@@ -113,6 +124,7 @@
     "invalid": "Revise os dados e tente de novo.",
     "tax_id": "Informe um CPF ou CNPJ válido. Exemplo: 11.444.777/0001-61",
     "email": "Informe um e-mail válido, como dono@empresa.com",
+    "weak_password": "A senha precisa de 8 caracteres, com letra e número.",
     "company_exists": "Já existe uma empresa com esse documento neste país.",
     "email_taken": "Esse e-mail já está em uso.",
     "forbidden": "Você não pode fazer isso.",

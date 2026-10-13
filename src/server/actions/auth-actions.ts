@@ -12,6 +12,7 @@ import { writeAudit } from "@/server/audit";
 import { enqueueEmail } from "@/server/jobs/boss";
 import { hashPassword } from "@/server/passwords";
 import { isLoginRateLimited } from "@/server/rate-limit";
+import { registerCompany } from "@/server/companies";
 import { loginSchema, passwordSchema } from "@/server/validation";
 
 export type FormState = { error?: string } | undefined;
@@ -97,6 +98,44 @@ export async function resetPasswordAction(_state: FormState, formData: FormData)
     prisma.session.deleteMany({ where: { userId: reset.userId } }),
   ]);
   redirect("/login");
+}
+
+export async function registerCompanyAction(_state: FormState, formData: FormData): Promise<FormState> {
+  const registered = await registerCompany({
+    name: formData.get("name"),
+    taxId: formData.get("taxId"),
+    country: formData.get("country"),
+    currency: formData.get("currency"),
+    locale: formData.get("locale"),
+    ownerName: formData.get("ownerName"),
+    ownerEmail: formData.get("ownerEmail"),
+    password: formData.get("password"),
+  });
+  if ("error" in registered) {
+    return { error: registered.error };
+  }
+  if (!registered.password) {
+    return { error: "weak_password" };
+  }
+  const jar = await cookies();
+  jar.set("locale", registered.company.locale === "EN" ? "en" : "pt-BR", {
+    path: "/",
+    sameSite: "lax",
+    httpOnly: true,
+  });
+  try {
+    await signIn("credentials", {
+      email: registered.email,
+      password: registered.password,
+      redirectTo: "/",
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return { error: "invalid" };
+    }
+    throw error;
+  }
+  return undefined;
 }
 
 export async function acceptInviteAction(_state: FormState, formData: FormData): Promise<FormState> {
