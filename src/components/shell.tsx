@@ -20,7 +20,9 @@ export function AppShell({
     <div className="min-h-screen md:grid md:grid-cols-[240px_1fr]">
       <aside className="flex flex-col gap-6 bg-slate-900 p-5 text-slate-100">
         <div className="flex items-center gap-3">
-          <CompanyLogo size={48} />
+          <div className="overflow-hidden rounded-xl bg-black">
+            <CompanyLogo size={52} />
+          </div>
           <div>
             <p className="text-sm font-semibold tracking-wide">Energon</p>
             <p className="text-xs text-slate-400">{title}</p>

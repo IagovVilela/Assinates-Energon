@@ -1,12 +1,13 @@
-import { AuthBrand } from "@/components/company-brand";
+import { AuthPanel } from "@/components/company-brand";
 import { RouteTransition } from "@/components/route-transition";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-10">
-      <div className="mx-auto max-w-lg">
-        <AuthBrand />
-        <RouteTransition>{children}</RouteTransition>
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4 py-10">
+      <div className="w-full max-w-lg">
+        <RouteTransition>
+          <AuthPanel>{children}</AuthPanel>
+        </RouteTransition>
       </div>
     </div>
   );

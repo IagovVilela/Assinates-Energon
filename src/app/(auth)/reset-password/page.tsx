@@ -9,8 +9,6 @@ export default async function ResetPage({
 }) {
   const params = await searchParams;
   return (
-    <main className="p-8">
-      <ResetForm token={params.token ?? ""} />
-    </main>
+    <ResetForm token={params.token ?? ""} />
   );
 }

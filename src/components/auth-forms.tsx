@@ -25,7 +25,7 @@ export function LoginForm() {
   const t = useTranslations("login");
   const [state, action, pending] = useActionState(loginAction, undefined);
   return (
-    <form action={action} className="card mx-auto flex max-w-md flex-col gap-3">
+    <form action={action} className="flex flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("title")}</h1>
       <label>
         {t("email")}
@@ -49,7 +49,7 @@ export function SignupForm() {
   const t = useTranslations("signup");
   const [state, action, pending] = useActionState(registerCompanyAction, undefined);
   return (
-    <form action={action} className="card mx-auto flex max-w-xl flex-col gap-3">
+    <form action={action} className="flex flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("title")}</h1>
       <p className="text-sm text-slate-600">{t("hint")}</p>
       <CompanyFields withPassword />
@@ -65,7 +65,7 @@ export function ForgotForm() {
   const errors = useTranslations("errors");
   const [state, action, pending] = useActionState(forgotPasswordAction, undefined);
   return (
-    <form action={action} className="card mx-auto flex max-w-md flex-col gap-3">
+    <form action={action} className="flex flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("title")}</h1>
       <input name="email" type="email" autoComplete="email" inputMode="email" required />
       {state?.error === "sent" ? <p className="text-sm">{t("sent")}</p> : null}
@@ -80,7 +80,7 @@ export function ResetForm({ token }: { token: string }) {
   const t = useTranslations("reset");
   const [state, action, pending] = useActionState(resetPasswordAction, undefined);
   return (
-    <form action={action} className="card mx-auto flex max-w-md flex-col gap-3">
+    <form action={action} className="flex flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("title")}</h1>
       <input type="hidden" name="token" value={token} />
       <input name="password" type="password" autoComplete="new-password" required />
@@ -94,7 +94,7 @@ export function InviteForm({ token }: { token: string }) {
   const t = useTranslations("invite");
   const [state, action, pending] = useActionState(acceptInviteAction, undefined);
   return (
-    <form action={action} className="card mx-auto flex max-w-md flex-col gap-3">
+    <form action={action} className="flex flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("title")}</h1>
       <input type="hidden" name="token" value={token} />
       <label>
