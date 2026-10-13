@@ -9,7 +9,11 @@ function hasSession(request: NextRequest) {
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  if (pathname.startsWith("/_next") || pathname === "/favicon.ico") {
+  if (
+    pathname.startsWith("/_next") ||
+    pathname === "/favicon.ico" ||
+    /\.(?:png|jpe?g|gif|svg|webp|ico|txt|xml|woff2?)$/i.test(pathname)
+  ) {
     return NextResponse.next();
   }
   const isPublic = PUBLIC_PATH.some((pattern) => pattern.test(pathname));
@@ -24,5 +28,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
 };
