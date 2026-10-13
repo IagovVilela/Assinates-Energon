@@ -111,6 +111,8 @@
   },
   "errors": {
     "invalid": "Check the form and try again.",
+    "tax_id": "Enter a valid CPF or CNPJ.",
+    "company_exists": "A company with this tax id already exists in this country.",
     "email_taken": "That email is already in use.",
     "forbidden": "You cannot do that.",
     "confirm": "Check the confirmation to continue.",

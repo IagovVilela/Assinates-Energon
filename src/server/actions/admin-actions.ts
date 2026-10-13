@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { Prisma } from "@prisma/client";
+
+import { isValidBrazilianTaxId, onlyDigits } from "@/lib/cnpj";
 import { currencyForCountry, gatewayForCountry } from "@/lib/countries";
-import { isValidCnpj, onlyDigits } from "@/lib/cnpj";
 import { prisma } from "@/lib/prisma";
 import { writeAudit } from "@/server/audit";
 import { startCheckout, syncPlanCatalog } from "@/server/billing";
@@ -38,8 +40,8 @@ export async function createCompanyAction(_state: FormState, formData: FormData)
   }
   const country = parsed.data.country.toUpperCase();
   const taxId = country === "BR" ? onlyDigits(parsed.data.taxId) : parsed.data.taxId.trim();
-  if (country === "BR" && !isValidCnpj(taxId)) {
-    return { error: "invalid" };
+  if (country === "BR" && !isValidBrazilianTaxId(taxId)) {
+    return { error: "tax_id" };
   }
   const gateway = gatewayForCountry(country);
   const currency = currencyForCountry(country, parsed.data.currency);
@@ -73,6 +75,9 @@ export async function createCompanyAction(_state: FormState, formData: FormData)
   } catch (error) {
     if (error instanceof Error && error.message === "EMAIL_TAKEN") {
       return { error: "email_taken" };
+    }
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return { error: "company_exists" };
     }
     throw error;
   }

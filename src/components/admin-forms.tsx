@@ -35,7 +35,7 @@ export function CompanyForm() {
     <form action={action} className="card flex max-w-xl flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("newCompany")}</h1>
       <label>{fields("name")}<input name="name" required /></label>
-      <label>{fields("taxId")}<input name="taxId" required /></label>
+      <label>{national ? "CPF ou CNPJ" : fields("taxId")}<input name="taxId" required /></label>
       <label>
         {fields("country")}
         <select name="country" value={country} onChange={(event) => changeCountry(event.target.value)}>

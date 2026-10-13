@@ -97,7 +97,7 @@
   },
   "fields": {
     "name": "Nome",
-    "taxId": "Documento fiscal",
+    "taxId": "CPF ou CNPJ",
     "country": "País",
     "currency": "Moeda",
     "locale": "Idioma",
@@ -111,6 +111,8 @@
   },
   "errors": {
     "invalid": "Revise os dados e tente de novo.",
+    "tax_id": "Informe um CPF ou CNPJ válido.",
+    "company_exists": "Já existe uma empresa com esse documento neste país.",
     "email_taken": "Esse e-mail já está em uso.",
     "forbidden": "Você não pode fazer isso.",
     "confirm": "Marque a confirmação para continuar.",
