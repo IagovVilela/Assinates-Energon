@@ -14,7 +14,8 @@
     "companies": "Empresas",
     "plans": "Planos",
     "audit": "Auditoria",
-    "admin": "Administração"
+    "admin": "Administração",
+    "insights": "Acompanhamento"
   },
   "login": {
     "title": "Entrar",
@@ -104,7 +105,28 @@
     "companies": "Empresas",
     "plans": "Planos",
     "audit": "Auditoria",
-    "tickets": "Chamados"
+    "tickets": "Chamados",
+    "insightsTitle": "Acompanhamento",
+    "insightsHint": "KPIs, telemetria e estatísticas dos clientes nos últimos 14 dias.",
+    "clientUsers": "Usuários clientes",
+    "activeSubs": "Assinaturas ativas",
+    "openTickets": "Chamados abertos",
+    "failedWebhooks": "Webhooks falhos",
+    "logins24h": "Logins (24h)",
+    "paid14d": "Recebido em BRL (14d)",
+    "mrr": "Receita recorrente mensal",
+    "chartCompanies": "Novas empresas",
+    "chartTickets": "Chamados abertos por dia",
+    "chartRevenue": "Faturas pagas em BRL",
+    "byStatus": "Assinaturas por status",
+    "byGateway": "Empresas por gateway",
+    "byCountry": "Empresas por país",
+    "topPlans": "Planos mais contratados",
+    "webhooks24h": "Telemetria de webhooks (24h)",
+    "eventsCount": "{count} eventos",
+    "logins": "Tentativas de login (24h)",
+    "loginOk": "Sucesso",
+    "loginFail": "Falha"
   },
   "fields": {
     "name": "Nome",
@@ -114,6 +136,7 @@
     "locale": "Idioma",
     "ownerName": "Nome do dono",
     "ownerEmail": "E-mail do dono",
+    "email": "E-mail",
     "description": "Descrição",
     "type": "Tipo",
     "interval": "Ciclo",
@@ -129,7 +152,7 @@
     "email_taken": "Esse e-mail já está em uso.",
     "forbidden": "Você não pode fazer isso.",
     "confirm": "Marque a confirmação para continuar.",
-    "gateway": "O gateway não concluiu a operação.",
+    "gateway": "O gateway de pagamento não concluiu a operação. Empresa do Brasil usa Asaas; outros países usam Stripe.",
     "not_found": "Registro não encontrado."
   },
   "status": {

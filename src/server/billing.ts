@@ -5,7 +5,7 @@ import type { Company, Plan, PlanPrice } from "@prisma/client";
 import { appUrl } from "@/lib/locale";
 import { prisma } from "@/lib/prisma";
 import { writeAudit } from "@/server/audit";
-import { getGateway } from "@/server/payments/gateway";
+import { getGateway, isGatewayConfigured } from "@/server/payments/gateway";
 import { assertCanSubscribe } from "@/server/payments/rules";
 
 async function contactEmail(companyId: string) {
@@ -312,7 +312,7 @@ export async function syncPlanCatalog(planId: string, actorId: string) {
     throw new Error("PLAN_NOT_FOUND");
   }
   const needsStripe = plan.prices.some((price) => price.currency !== "BRL");
-  const stripe = needsStripe ? getGateway("STRIPE") : null;
+  const stripe = needsStripe && isGatewayConfigured("STRIPE") ? getGateway("STRIPE") : null;
   let productId = plan.stripeProductId;
   for (const price of plan.prices) {
     if (price.currency === "BRL" || !stripe) {

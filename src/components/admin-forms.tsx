@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { createCompanyAction, inviteUserAction, savePlanAction } from "@/server/actions/admin-actions";
+import { createCompanyAction, inviteUserAction, savePlanAction, syncPlanAction } from "@/server/actions/admin-actions";
 import { COUNTRIES } from "@/lib/countries";
 import {
   maskBrazilianTaxId,
@@ -211,6 +211,18 @@ export function PlanForm({
       <p className="text-sm text-slate-600">{t("syncHint")}</p>
       <FormError code={state?.error} />
       <button type="submit" disabled={pending}>{t("newPlan")}</button>
+    </form>
+  );
+}
+
+export function SyncPlanForm({ planId }: { planId: string }) {
+  const t = useTranslations("admin");
+  const [state, action, pending] = useActionState(syncPlanAction, undefined);
+  return (
+    <form action={action} className="flex flex-col gap-2">
+      <input type="hidden" name="planId" value={planId} />
+      <FormError code={state?.error} />
+      <button className="btn-secondary" type="submit" disabled={pending}>{t("sync")}</button>
     </form>
   );
 }

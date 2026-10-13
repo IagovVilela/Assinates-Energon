@@ -1,3 +1,5 @@
+import { onlyDigits } from "@/lib/cnpj";
+import { log } from "@/lib/log";
 import { minorToMajor } from "@/lib/money";
 import { safeEqual } from "@/lib/tokens";
 import type {
@@ -91,6 +93,8 @@ export function createAsaasAdapter(options: {
       },
     });
     if (!response.ok) {
+      const body = (await response.text()).slice(0, 500);
+      log("error", "asaas.request", { path, status: response.status, body });
       throw new Error(`ASAAS_${response.status}`);
     }
     if (response.status === 204) {
@@ -105,7 +109,7 @@ export function createAsaasAdapter(options: {
         method: "POST",
         body: JSON.stringify({
           name: input.name,
-          cpfCnpj: input.taxId,
+          cpfCnpj: onlyDigits(input.taxId),
           email: input.email,
           externalReference: input.companyId,
         }),

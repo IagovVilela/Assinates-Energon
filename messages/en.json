@@ -14,7 +14,8 @@
     "companies": "Companies",
     "plans": "Plans",
     "audit": "Audit log",
-    "admin": "Administration"
+    "admin": "Administration",
+    "insights": "Insights"
   },
   "login": {
     "title": "Sign in",
@@ -104,7 +105,28 @@
     "companies": "Companies",
     "plans": "Plans",
     "audit": "Audit log",
-    "tickets": "Tickets"
+    "tickets": "Tickets",
+    "insightsTitle": "Customer insights",
+    "insightsHint": "KPIs, telemetry and customer stats for the last 14 days.",
+    "clientUsers": "Customer users",
+    "activeSubs": "Active subscriptions",
+    "openTickets": "Open tickets",
+    "failedWebhooks": "Failed webhooks",
+    "logins24h": "Logins (24h)",
+    "paid14d": "Collected BRL (14d)",
+    "mrr": "Monthly recurring revenue",
+    "chartCompanies": "New companies",
+    "chartTickets": "Tickets opened per day",
+    "chartRevenue": "Paid invoices in BRL",
+    "byStatus": "Subscriptions by status",
+    "byGateway": "Companies by gateway",
+    "byCountry": "Companies by country",
+    "topPlans": "Top plans",
+    "webhooks24h": "Webhook telemetry (24h)",
+    "eventsCount": "{count} events",
+    "logins": "Login attempts (24h)",
+    "loginOk": "Success",
+    "loginFail": "Failure"
   },
   "fields": {
     "name": "Name",
@@ -114,6 +136,7 @@
     "locale": "Language",
     "ownerName": "Owner name",
     "ownerEmail": "Owner email",
+    "email": "Email",
     "description": "Description",
     "type": "Type",
     "interval": "Cycle",
@@ -129,7 +152,7 @@
     "email_taken": "That email is already in use.",
     "forbidden": "You cannot do that.",
     "confirm": "Check the confirmation to continue.",
-    "gateway": "The gateway did not complete the operation.",
+    "gateway": "The payment gateway did not complete the operation. Brazilian companies use Asaas; other countries use Stripe.",
     "not_found": "Record not found."
   },
   "status": {

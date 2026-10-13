@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { log } from "@/lib/log";
+
 import { prisma } from "@/lib/prisma";
 import { writeAudit } from "@/server/audit";
 import {
@@ -32,7 +34,10 @@ export async function contractAction(formData: FormData) {
       planId: String(formData.get("planId") ?? ""),
       actorId: user.id,
     });
-  } catch {
+  } catch (error) {
+    log("error", "checkout.failed", {
+      message: error instanceof Error ? error.message : "unknown",
+    });
     redirect("/subscriptions?error=gateway");
   }
   redirect(url);

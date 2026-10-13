@@ -37,7 +37,9 @@ export function LoginForm() {
       </label>
       <ErrorLine code={state?.error} />
       <button type="submit" disabled={pending}>{t("submit")}</button>
-      <a className="text-sm text-teal-800" href="/register">{t("createAccount")}</a>
+      <p className="text-sm">
+        <a className="font-semibold text-teal-800" href="/register">{t("createAccount")}</a>
+      </p>
       <a className="text-sm text-teal-800" href="/forgot-password">{t("forgot")}</a>
     </form>
   );

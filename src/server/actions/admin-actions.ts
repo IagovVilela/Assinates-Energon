@@ -132,11 +132,19 @@ export async function savePlanAction(_state: FormState, formData: FormData): Pro
   redirect(`/admin/plans/${plan.id}`);
 }
 
-export async function syncPlanAction(formData: FormData) {
+export async function syncPlanAction(_state: FormState, formData: FormData): Promise<FormState> {
   const admin = await requireAdmin();
   const planId = String(formData.get("planId") ?? "");
-  await syncPlanCatalog(planId, admin.id);
+  try {
+    await syncPlanCatalog(planId, admin.id);
+  } catch (error) {
+    if (error instanceof Error && error.message === "GATEWAY_NOT_CONFIGURED") {
+      return { error: "gateway" };
+    }
+    throw error;
+  }
   revalidatePath(`/admin/plans/${planId}`);
+  return undefined;
 }
 
 export async function adminCheckoutAction(formData: FormData) {

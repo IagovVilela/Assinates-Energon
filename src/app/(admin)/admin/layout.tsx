@@ -24,7 +24,7 @@ async function AdminFrame({ children }: { children: React.ReactNode }) {
       title={t("nav.admin")}
       logoutLabel={t("logout")}
       links={[
-        { href: "/admin", label: t("nav.admin") },
+        { href: "/admin", label: t("nav.insights") },
         { href: "/admin/companies", label: t("nav.companies") },
         { href: "/admin/plans", label: t("nav.plans") },
         { href: "/admin/tickets", label: t("nav.tickets") },
