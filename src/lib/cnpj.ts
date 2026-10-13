@@ -1,6 +1,6 @@
-export function onlyDigits(value: string) {
-  return value.replace(/\D/g, "");
-}
+import { onlyDigits } from "@/lib/masks";
+
+export { onlyDigits };
 
 function checksum(base: string, factors: number[]) {
   const total = factors.reduce((sum, factor, index) => sum + Number(base[index]) * factor, 0);

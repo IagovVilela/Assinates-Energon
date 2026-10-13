@@ -142,7 +142,7 @@ export function InviteTeammateForm() {
     <form action={action} className="card flex max-w-xl flex-col gap-3">
       <h2 className="font-semibold">{t("invite")}</h2>
       <label>{fields("name")}<input name="name" required /></label>
-      <label>{fields("email")}<input name="email" type="email" required /></label>
+      <label>{fields("email")}<input name="email" type="email" required autoComplete="email" inputMode="email" /></label>
       <label>
         {fields("role")}
         <select name="companyRole" defaultValue="TECHNICAL">

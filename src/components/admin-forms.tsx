@@ -5,6 +5,14 @@ import { useTranslations } from "next-intl";
 
 import { createCompanyAction, inviteUserAction, savePlanAction } from "@/server/actions/admin-actions";
 import { COUNTRIES } from "@/lib/countries";
+import {
+  maskBrazilianTaxId,
+  maskInternationalTaxId,
+  maskMoney,
+  moneyToMinor,
+  onlyDigits,
+} from "@/lib/masks";
+import { MaskedInput } from "@/components/masked-input";
 
 function FormError({ code }: { code?: string }) {
   const t = useTranslations("errors");
@@ -20,6 +28,7 @@ export function CompanyForm() {
   const [state, action, pending] = useActionState(createCompanyAction, undefined);
   const [country, setCountry] = useState("BR");
   const [currency, setCurrency] = useState("BRL");
+  const [taxId, setTaxId] = useState("");
   const national = country === "BR";
 
   function changeCountry(next: string) {
@@ -34,8 +43,19 @@ export function CompanyForm() {
   return (
     <form action={action} className="card flex max-w-xl flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("newCompany")}</h1>
-      <label>{fields("name")}<input name="name" required /></label>
-      <label>{national ? "CPF ou CNPJ" : fields("taxId")}<input name="taxId" required /></label>
+      <label>{fields("name")}<input name="name" required autoComplete="organization" /></label>
+      <label>
+        {national ? "CPF ou CNPJ" : fields("taxId")}
+        <MaskedInput
+          name="taxId"
+          required
+          inputMode={national ? "numeric" : "text"}
+          placeholder={national ? "000.000.000-00" : "Tax id"}
+          display={taxId}
+          onDisplay={(next) => setTaxId(national ? maskBrazilianTaxId(next) : maskInternationalTaxId(next))}
+          hiddenValue={national ? onlyDigits(taxId) : taxId}
+        />
+      </label>
       <label>
         {fields("country")}
         <select name="country" value={country} onChange={(event) => changeCountry(event.target.value)}>
@@ -63,8 +83,8 @@ export function CompanyForm() {
           <option value="EN">en</option>
         </select>
       </label>
-      <label>{fields("ownerName")}<input name="ownerName" required /></label>
-      <label>{fields("ownerEmail")}<input name="ownerEmail" type="email" required /></label>
+      <label>{fields("ownerName")}<input name="ownerName" required autoComplete="name" /></label>
+      <label>{fields("ownerEmail")}<input name="ownerEmail" type="email" required autoComplete="email" inputMode="email" /></label>
       <FormError code={state?.error} />
       <button type="submit" disabled={pending}>{t("newCompany")}</button>
     </form>
@@ -80,8 +100,8 @@ export function InviteUserForm({ companyId }: { companyId: string }) {
     <form action={action} className="card flex flex-col gap-3">
       <h2 className="font-semibold">{team("invite")}</h2>
       <input type="hidden" name="companyId" value={companyId} />
-      <label>{fields("name")}<input name="name" required /></label>
-      <input name="email" type="email" required />
+      <label>{fields("name")}<input name="name" required autoComplete="name" /></label>
+      <label>{fields("ownerEmail")}<input name="email" type="email" required autoComplete="email" inputMode="email" /></label>
       <select name="companyRole" defaultValue="TECHNICAL">
         <option value="OWNER">{roles("OWNER")}</option>
         <option value="FINANCE">{roles("FINANCE")}</option>
@@ -111,7 +131,10 @@ export function PlanForm({
   const planType = useTranslations("planType");
   const interval = useTranslations("interval");
   const [state, action, pending] = useActionState(savePlanAction, undefined);
-  const amount = (currency: string) => plan?.prices.find((price) => price.currency === currency)?.amountMinor ?? 0;
+  const amount = (code: string) => plan?.prices.find((price) => price.currency === code)?.amountMinor ?? 0;
+  const [brl, setBrl] = useState(amount("BRL") ? maskMoney(String(amount("BRL"))) : "");
+  const [usd, setUsd] = useState(amount("USD") ? maskMoney(String(amount("USD"))) : "");
+  const [eur, setEur] = useState(amount("EUR") ? maskMoney(String(amount("EUR"))) : "");
   return (
     <form action={action} className="card flex max-w-xl flex-col gap-3">
       <h1 className="text-xl font-semibold">{plan ? plan.name : t("newPlan")}</h1>
@@ -132,9 +155,39 @@ export function PlanForm({
           <option value="YEAR">{interval("YEAR")}</option>
         </select>
       </label>
-      <label>BRL (centavos)<input name="brl" type="number" min={0} defaultValue={amount("BRL")} /></label>
-      <label>USD (cents)<input name="usd" type="number" min={0} defaultValue={amount("USD")} /></label>
-      <label>EUR (cents)<input name="eur" type="number" min={0} defaultValue={amount("EUR")} /></label>
+      <label>
+        BRL
+        <MaskedInput
+          name="brl"
+          inputMode="decimal"
+          placeholder="0,00"
+          display={brl}
+          onDisplay={(next) => setBrl(maskMoney(next))}
+          hiddenValue={String(moneyToMinor(brl))}
+        />
+      </label>
+      <label>
+        USD
+        <MaskedInput
+          name="usd"
+          inputMode="decimal"
+          placeholder="0.00"
+          display={usd}
+          onDisplay={(next) => setUsd(maskMoney(next))}
+          hiddenValue={String(moneyToMinor(usd))}
+        />
+      </label>
+      <label>
+        EUR
+        <MaskedInput
+          name="eur"
+          inputMode="decimal"
+          placeholder="0.00"
+          display={eur}
+          onDisplay={(next) => setEur(maskMoney(next))}
+          hiddenValue={String(moneyToMinor(eur))}
+        />
+      </label>
       <label className="flex items-center gap-2 text-sm">
         <input className="w-auto" type="checkbox" name="active" defaultChecked={plan?.active ?? true} />
         {fields("active")}

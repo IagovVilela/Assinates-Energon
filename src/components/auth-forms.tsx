@@ -27,7 +27,7 @@ export function LoginForm() {
       <h1 className="text-xl font-semibold">{t("title")}</h1>
       <label>
         {t("email")}
-        <input name="email" type="email" autoComplete="email" required />
+        <input name="email" type="email" autoComplete="email" inputMode="email" required />
       </label>
       <label>
         {t("password")}
@@ -47,7 +47,7 @@ export function ForgotForm() {
   return (
     <form action={action} className="card mx-auto flex max-w-md flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("title")}</h1>
-      <input name="email" type="email" required />
+      <input name="email" type="email" autoComplete="email" inputMode="email" required />
       {state?.error === "sent" ? <p className="text-sm">{t("sent")}</p> : null}
       {state?.error && state.error !== "sent" ? <p className="text-sm text-red-700">{errors("invalid")}</p> : null}
       <button type="submit" disabled={pending}>{t("submit")}</button>
