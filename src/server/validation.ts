@@ -21,7 +21,7 @@ export const companySchema = z.object({
   name: z.string().trim().min(2).max(160),
   taxId: z.string().trim().min(3).max(32),
   country: z.string().trim().length(2),
-  currency: z.enum(["USD", "EUR"]).optional(),
+  currency: z.enum(["BRL", "USD", "EUR"]).optional(),
   locale: z.enum(["PT_BR", "EN"]),
   ownerName: z.string().trim().min(2).max(120),
   ownerEmail: z.email(),

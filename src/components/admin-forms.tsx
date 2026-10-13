@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { createCompanyAction, inviteUserAction, savePlanAction } from "@/server/actions/admin-actions";
@@ -18,6 +18,19 @@ export function CompanyForm() {
   const t = useTranslations("admin");
   const fields = useTranslations("fields");
   const [state, action, pending] = useActionState(createCompanyAction, undefined);
+  const [country, setCountry] = useState("BR");
+  const [currency, setCurrency] = useState("BRL");
+  const national = country === "BR";
+
+  function changeCountry(next: string) {
+    setCountry(next);
+    if (next === "BR") {
+      setCurrency("BRL");
+      return;
+    }
+    setCurrency((current) => (current === "BRL" ? "USD" : current));
+  }
+
   return (
     <form action={action} className="card flex max-w-xl flex-col gap-3">
       <h1 className="text-xl font-semibold">{t("newCompany")}</h1>
@@ -25,17 +38,22 @@ export function CompanyForm() {
       <label>{fields("taxId")}<input name="taxId" required /></label>
       <label>
         {fields("country")}
-        <select name="country" defaultValue="BR">
-          {COUNTRIES.map((country) => (
-            <option key={country.code} value={country.code}>{country.name}</option>
+        <select name="country" value={country} onChange={(event) => changeCountry(event.target.value)}>
+          {COUNTRIES.map((item) => (
+            <option key={item.code} value={item.code}>{item.name}</option>
           ))}
         </select>
       </label>
       <label>
         {fields("currency")}
-        <select name="currency" defaultValue="USD">
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
+        <select
+          name="currency"
+          value={currency}
+          onChange={(event) => setCurrency(event.target.value)}
+        >
+          {national ? <option value="BRL">BRL</option> : null}
+          {national ? null : <option value="USD">USD</option>}
+          {national ? null : <option value="EUR">EUR</option>}
         </select>
       </label>
       <label>
