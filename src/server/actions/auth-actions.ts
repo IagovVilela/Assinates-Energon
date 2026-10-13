@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "@/auth";
 import { hashToken, newSecretToken } from "@/lib/tokens";
 import { prisma } from "@/lib/prisma";
+import { WELCOME_COOKIE } from "@/lib/company";
 import { appUrl } from "@/lib/locale";
 import { writeAudit } from "@/server/audit";
 import { enqueueEmail } from "@/server/jobs/boss";
@@ -16,6 +17,11 @@ import { registerCompany } from "@/server/companies";
 import { loginSchema, passwordSchema } from "@/server/validation";
 
 export type FormState = { error?: string } | undefined;
+
+async function markWelcome() {
+  const jar = await cookies();
+  jar.set(WELCOME_COOKIE, "1", { path: "/", maxAge: 60, sameSite: "lax", httpOnly: false });
+}
 
 export async function loginAction(_state: FormState, formData: FormData): Promise<FormState> {
   const parsed = loginSchema.safeParse({
@@ -35,6 +41,7 @@ export async function loginAction(_state: FormState, formData: FormData): Promis
     return { error: "rate_limited" };
   }
   try {
+    await markWelcome();
     await signIn("credentials", {
       email,
       password: parsed.data.password,
@@ -124,6 +131,7 @@ export async function registerCompanyAction(_state: FormState, formData: FormDat
     httpOnly: true,
   });
   try {
+    await markWelcome();
     await signIn("credentials", {
       email: registered.email,
       password: registered.password,
@@ -180,6 +188,7 @@ export async function acceptInviteAction(_state: FormState, formData: FormData):
     entityId: invitation.id,
   });
   try {
+    await markWelcome();
     await signIn("credentials", {
       email: invitation.email,
       password: password.data,

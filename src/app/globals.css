@@ -90,3 +90,58 @@ th {
   font-size: 0.75rem;
   font-weight: 600;
 }
+
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+}
+@keyframes vt-slide-out {
+  to { transform: translateX(-18px); }
+}
+@keyframes vt-slide-in {
+  from { transform: translateX(18px); }
+}
+@keyframes welcome-fade {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes welcome-rise {
+  0% { opacity: 0; transform: scale(0.86); }
+  35% { opacity: 1; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+::view-transition-old(.page-exit),
+::view-transition-old(.page-fade) {
+  animation: 200ms ease-out both vt-fade-out, 200ms ease-out both vt-slide-out;
+}
+::view-transition-new(.page-enter),
+::view-transition-new(.page-fade) {
+  animation: 320ms ease-out 40ms both vt-fade-in, 320ms ease-out 40ms both vt-slide-in;
+}
+
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: #05070c;
+  animation: welcome-fade 1.7s ease forwards;
+  pointer-events: none;
+}
+.welcome-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  animation: welcome-rise 0.7s ease-out;
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
