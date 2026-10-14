@@ -36,7 +36,11 @@ export function CompanyFields({ withPassword = false }: { withPassword?: boolean
       setCurrency("BRL");
       return;
     }
-    setCurrency((current) => (current === "BRL" ? "USD" : current));
+    if (next === "GB") {
+      setCurrency("GBP");
+      return;
+    }
+    setCurrency((current) => (current === "BRL" || current === "GBP" ? "USD" : current));
   }
 
   return (
@@ -70,8 +74,9 @@ export function CompanyFields({ withPassword = false }: { withPassword?: boolean
           onChange={(event) => setCurrency(event.target.value)}
         >
           {national ? <option value="BRL">BRL</option> : null}
-          {national ? null : <option value="USD">USD</option>}
-          {national ? null : <option value="EUR">EUR</option>}
+          {national ? null : <option value="USD">USD — Dólar</option>}
+          {national ? null : <option value="EUR">EUR — Euro</option>}
+          {national ? null : <option value="GBP">GBP — Libra</option>}
         </select>
       </label>
       <label>
@@ -151,9 +156,10 @@ export function PlanForm({
   const [brl, setBrl] = useState(amount("BRL") ? maskMoney(String(amount("BRL"))) : "");
   const [usd, setUsd] = useState(amount("USD") ? maskMoney(String(amount("USD"))) : "");
   const [eur, setEur] = useState(amount("EUR") ? maskMoney(String(amount("EUR"))) : "");
+  const [gbp, setGbp] = useState(amount("GBP") ? maskMoney(String(amount("GBP"))) : "");
   return (
     <form action={action} className="card flex max-w-xl flex-col gap-3">
-      <h1 className="text-xl font-semibold">{plan ? plan.name : t("newPlan")}</h1>
+      <h1 className="text-xl font-semibold">{plan ? t("editPlan") : t("newPlan")}</h1>
       {plan ? <input type="hidden" name="planId" value={plan.id} /> : null}
       <label>{fields("name")}<input name="name" defaultValue={plan?.name} required /></label>
       <label>{fields("description")}<textarea name="description" defaultValue={plan?.description} required /></label>
@@ -172,7 +178,7 @@ export function PlanForm({
         </select>
       </label>
       <label>
-        BRL
+        BRL — Real
         <MaskedInput
           name="brl"
           inputMode="decimal"
@@ -183,7 +189,7 @@ export function PlanForm({
         />
       </label>
       <label>
-        USD
+        USD — Dólar
         <MaskedInput
           name="usd"
           inputMode="decimal"
@@ -194,7 +200,7 @@ export function PlanForm({
         />
       </label>
       <label>
-        EUR
+        EUR — Euro
         <MaskedInput
           name="eur"
           inputMode="decimal"
@@ -204,13 +210,24 @@ export function PlanForm({
           hiddenValue={String(moneyToMinor(eur))}
         />
       </label>
+      <label>
+        GBP — Libra
+        <MaskedInput
+          name="gbp"
+          inputMode="decimal"
+          placeholder="0.00"
+          display={gbp}
+          onDisplay={(next) => setGbp(maskMoney(next))}
+          hiddenValue={String(moneyToMinor(gbp))}
+        />
+      </label>
       <label className="flex items-center gap-2 text-sm">
         <input className="w-auto" type="checkbox" name="active" defaultChecked={plan?.active ?? true} />
         {fields("active")}
       </label>
       <p className="text-sm text-slate-600">{t("syncHint")}</p>
       <FormError code={state?.error} />
-      <button type="submit" disabled={pending}>{t("newPlan")}</button>
+      <button type="submit" disabled={pending}>{plan ? t("savePlan") : t("newPlan")}</button>
     </form>
   );
 }

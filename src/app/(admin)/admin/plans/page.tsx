@@ -17,6 +17,7 @@ export default async function PlansPage() {
         {plans.map((plan) => (
           <li key={plan.id}>
             <a className="text-teal-800" href={`/admin/plans/${plan.id}`}>{plan.name}</a>
+            <a className="ml-3 text-sm text-teal-800" href={`/admin/plans/${plan.id}`}>{t("admin.editPlan")}</a>
             <span className="ml-2 text-sm text-slate-600">{plan.active ? "" : "·"}</span>
           </li>
         ))}

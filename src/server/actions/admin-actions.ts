@@ -13,11 +13,12 @@ import { can } from "@/server/permissions";
 import { inviteSchema, planSchema } from "@/server/validation";
 import type { FormState } from "@/server/actions/auth-actions";
 
-function pricesFrom(input: { brl: number; usd: number; eur: number }) {
+function pricesFrom(input: { brl: number; usd: number; eur: number; gbp: number }) {
   return [
     { currency: "BRL", amountMinor: input.brl },
     { currency: "USD", amountMinor: input.usd },
     { currency: "EUR", amountMinor: input.eur },
+    { currency: "GBP", amountMinor: input.gbp },
   ].filter((price) => price.amountMinor > 0);
 }
 
@@ -92,6 +93,7 @@ export async function savePlanAction(_state: FormState, formData: FormData): Pro
     brl: formData.get("brl") || 0,
     usd: formData.get("usd") || 0,
     eur: formData.get("eur") || 0,
+    gbp: formData.get("gbp") || 0,
     active: formData.get("active") === "on",
   });
   if (!parsed.success) {

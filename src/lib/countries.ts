@@ -19,7 +19,7 @@ export const COUNTRIES = [
   { code: "AU", name: "Australia" },
 ] as const;
 
-export const STRIPE_CURRENCIES = ["USD", "EUR"] as const;
+export const STRIPE_CURRENCIES = ["USD", "EUR", "GBP"] as const;
 
 export function gatewayForCountry(country: string): "ASAAS" | "STRIPE" {
   return country === "BR" ? "ASAAS" : "STRIPE";
@@ -29,8 +29,11 @@ export function currencyForCountry(country: string, requested?: string) {
   if (country === "BR") {
     return "BRL";
   }
-  if (requested === "EUR") {
-    return "EUR";
+  if (requested === "EUR" || requested === "GBP" || requested === "USD") {
+    return requested;
+  }
+  if (country === "GB") {
+    return "GBP";
   }
   return "USD";
 }

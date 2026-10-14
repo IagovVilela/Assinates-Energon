@@ -2,6 +2,7 @@ const MINOR_DIGITS: Record<string, number> = {
   BRL: 2,
   USD: 2,
   EUR: 2,
+  GBP: 2,
 };
 
 export function minorDigits(currency: string) {

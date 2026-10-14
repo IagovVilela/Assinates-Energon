@@ -29,7 +29,7 @@ export const companySchema = z.object({
   name: z.string().trim().min(2).max(160),
   taxId: z.string().trim().min(3).max(32),
   country: z.string().trim().length(2),
-  currency: z.enum(["BRL", "USD", "EUR"]).optional(),
+  currency: z.enum(["BRL", "USD", "EUR", "GBP"]).optional(),
   locale: z.enum(["PT_BR", "EN"]),
   ownerName: z.string().trim().min(2).max(120),
   ownerEmail: emailField,
@@ -43,6 +43,7 @@ export const planSchema = z.object({
   brl: z.coerce.number().int().nonnegative(),
   usd: z.coerce.number().int().nonnegative(),
   eur: z.coerce.number().int().nonnegative(),
+  gbp: z.coerce.number().int().nonnegative(),
   active: z.boolean(),
 });
 
