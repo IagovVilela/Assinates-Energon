@@ -144,16 +144,19 @@ export function createAsaasAdapter(options: {
     async createOneTimeCharge(input) {
       const dueDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
       const installmentCount = input.installmentCount && input.installmentCount > 1 ? input.installmentCount : undefined;
+      const total = minorToMajor(input.amountMinor, input.currency);
+      // Asaas: à vista usa `value`; parcelado usa installmentCount + totalValue (sem `value`).
       const payment = await request<AsaasPayment>("/payments", {
         method: "POST",
         body: JSON.stringify({
           customer: input.customerExternalId,
-          billingType: "UNDEFINED",
-          value: minorToMajor(input.amountMinor, input.currency),
+          billingType: installmentCount ? "CREDIT_CARD" : "UNDEFINED",
           dueDate,
           description: input.description,
           externalReference: input.localInvoiceId,
-          ...(installmentCount ? { installmentCount } : {}),
+          ...(installmentCount
+            ? { installmentCount, totalValue: total }
+            : { value: total }),
         }),
       });
       if (!payment.invoiceUrl) {

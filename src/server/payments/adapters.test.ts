@@ -106,11 +106,13 @@ describe("stripe adapter installments", () => {
 });
 
 describe("asaas adapter", () => {
-  it("sends installmentCount on one-time charges", async () => {
+  it("sends installmentCount with totalValue on one-time charges", async () => {
     const fetchImpl = vi.fn(async (_url: string, init?: RequestInit) => {
       const body = JSON.parse(String(init?.body));
+      expect(body.billingType).toBe("CREDIT_CARD");
       expect(body.installmentCount).toBe(6);
-      expect(body.value).toBe(300);
+      expect(body.totalValue).toBe(300);
+      expect(body.value).toBeUndefined();
       return Response.json({ id: "pay_1", invoiceUrl: "https://asaas.example/pay" });
     });
     const adapter = createAsaasAdapter({
