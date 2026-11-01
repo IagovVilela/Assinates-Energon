@@ -1,6 +1,6 @@
 import type Stripe from "stripe";
 
-import { minorDigits } from "@/lib/money";
+import { installmentAmountMinor, minorDigits } from "@/lib/money";
 import type {
   BillingInterval,
   ChangePlanInput,
@@ -159,6 +159,50 @@ export function createStripeAdapter(client: StripeClient, webhookSecret: string)
     },
 
     async createOneTimeCharge(input: CreateOneTimeInput) {
+      const installmentCount = input.installmentCount && input.installmentCount > 1 ? input.installmentCount : 1;
+      if (installmentCount > 1) {
+        const perInstallment = installmentAmountMinor(input.amountMinor, installmentCount);
+        const cancelAt = Math.floor(Date.now() / 1000) + installmentCount * 30 * 24 * 60 * 60;
+        const session = await client.checkout.sessions.create({
+          mode: "subscription",
+          customer: input.customerExternalId,
+          line_items: [
+            {
+              quantity: 1,
+              price_data: {
+                currency: input.currency.toLowerCase(),
+                unit_amount: perInstallment,
+                recurring: { interval: "month" },
+                product_data: {
+                  name: input.description,
+                  metadata: {
+                    localInvoiceId: input.localInvoiceId,
+                    installmentCount: String(installmentCount),
+                  },
+                },
+              },
+            },
+          ],
+          success_url: input.successUrl,
+          cancel_url: input.cancelUrl,
+          metadata: {
+            localInvoiceId: input.localInvoiceId,
+            installmentCount: String(installmentCount),
+          },
+          // cancel_at ends the temporary installment subscription after N cycles.
+          subscription_data: {
+            cancel_at: cancelAt,
+            metadata: {
+              localInvoiceId: input.localInvoiceId,
+              installmentCount: String(installmentCount),
+            },
+          } as Stripe.Checkout.SessionCreateParams.SubscriptionData,
+        });
+        if (!session.url) {
+          throw new Error("CHECKOUT_URL_MISSING");
+        }
+        return { externalId: session.id, checkoutUrl: session.url };
+      }
       if (!input.stripePriceId) {
         throw new Error("STRIPE_PRICE_MISSING");
       }

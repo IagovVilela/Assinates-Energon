@@ -1,14 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
-import { useTranslations } from "next-intl";
+import { useActionState, useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
 import type { TicketStatus } from "@prisma/client";
 
+import { formatMoney, installmentAmountMinor } from "@/lib/money";
 import {
   adminReplyTicketAction,
   cancelSubscriptionAction,
   changePlanAction,
+  contractAction,
   createTicketAction,
   inviteTeammateAction,
   replyTicketAction,
@@ -20,6 +22,62 @@ function FormError({ code }: { code?: string }) {
     return null;
   }
   return <p className="text-sm text-red-700">{t(code)}</p>;
+}
+
+export function ContractPlanForm({
+  planId,
+  amountMinor,
+  currency,
+  maxInstallments,
+}: {
+  planId: string;
+  amountMinor: number;
+  currency: string;
+  maxInstallments: number;
+}) {
+  const t = useTranslations("subscriptions");
+  const locale = useLocale();
+  const max = Math.max(1, maxInstallments);
+  const [count, setCount] = useState(1);
+  const options = useMemo(
+    () =>
+      Array.from({ length: max }, (_, index) => {
+        const installments = index + 1;
+        const per = installmentAmountMinor(amountMinor, installments);
+        return {
+          value: installments,
+          label: t("installmentOption", {
+            count: installments,
+            amount: formatMoney(per, currency, locale),
+          }),
+        };
+      }),
+    [amountMinor, currency, locale, max, t],
+  );
+  return (
+    <form action={contractAction} className="mt-3 flex flex-col gap-2">
+      <input type="hidden" name="planId" value={planId} />
+      {max > 1 ? (
+        <label className="text-sm">
+          {t("installments")}
+          <select
+            name="installmentCount"
+            value={count}
+            onChange={(event) => setCount(Number(event.target.value))}
+          >
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : (
+        <input type="hidden" name="installmentCount" value="1" />
+      )}
+      <button type="submit">{t("contract")}</button>
+    </form>
+  );
 }
 
 export function ChangePlanForm({

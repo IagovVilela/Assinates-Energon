@@ -40,6 +40,7 @@ export const planSchema = z.object({
   description: z.string().trim().min(2).max(2000),
   type: z.enum(["RECURRING", "ONE_TIME"]),
   interval: z.enum(["MONTH", "YEAR"]).optional(),
+  maxInstallments: z.coerce.number().int().min(1).max(24).default(1),
   brl: z.coerce.number().int().nonnegative(),
   usd: z.coerce.number().int().nonnegative(),
   eur: z.coerce.number().int().nonnegative(),

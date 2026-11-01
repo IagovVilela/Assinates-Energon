@@ -20,3 +20,8 @@ export function formatMoney(amountMinor: number, currency: string, locale: strin
     currency,
   }).format(minorToMajor(amountMinor, currency));
 }
+
+export function installmentAmountMinor(totalMinor: number, installments: number) {
+  const count = Math.max(1, Math.floor(installments));
+  return Math.ceil(totalMinor / count);
+}

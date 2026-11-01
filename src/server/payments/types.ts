@@ -63,6 +63,7 @@ export type CreateOneTimeInput = {
   amountMinor: number;
   currency: string;
   description: string;
+  installmentCount?: number;
   stripePriceId?: string;
   successUrl: string;
   cancelUrl: string;

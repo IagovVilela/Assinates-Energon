@@ -143,6 +143,7 @@ export function createAsaasAdapter(options: {
 
     async createOneTimeCharge(input) {
       const dueDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const installmentCount = input.installmentCount && input.installmentCount > 1 ? input.installmentCount : undefined;
       const payment = await request<AsaasPayment>("/payments", {
         method: "POST",
         body: JSON.stringify({
@@ -152,6 +153,7 @@ export function createAsaasAdapter(options: {
           dueDate,
           description: input.description,
           externalReference: input.localInvoiceId,
+          ...(installmentCount ? { installmentCount } : {}),
         }),
       });
       if (!payment.invoiceUrl) {

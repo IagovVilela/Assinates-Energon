@@ -59,6 +59,7 @@ export async function startCheckout(input: {
   company: Company;
   planId: string;
   actorId: string;
+  installmentCount?: number;
 }) {
   const plan = await prisma.plan.findUnique({
     where: { id: input.planId },
@@ -71,6 +72,11 @@ export async function startCheckout(input: {
   assertCanSubscribe(input.company, plan, price);
   if (!price) {
     throw new Error("PRICE");
+  }
+  const maxInstallments = plan.type === "ONE_TIME" ? Math.max(1, plan.maxInstallments) : 1;
+  const installmentCount = Math.floor(input.installmentCount ?? 1);
+  if (installmentCount < 1 || installmentCount > maxInstallments) {
+    throw new Error("INVALID_INSTALLMENTS");
   }
   const customerExternalId = await ensureGatewayCustomer(input.company);
   const gateway = getGateway(input.company.gateway);
@@ -94,6 +100,7 @@ export async function startCheckout(input: {
         amountMinor: price.amountMinor,
         currency: price.currency,
         description: plan.name,
+        installmentCount,
         stripePriceId: price.stripePriceId ?? undefined,
         successUrl: `${base}/invoices?paid=1`,
         cancelUrl: `${base}/invoices?canceled=1`,
@@ -108,7 +115,7 @@ export async function startCheckout(input: {
         action: "invoice.created",
         entityType: "Invoice",
         entityId: invoice.id,
-        metadata: { planId: plan.id },
+        metadata: { planId: plan.id, installmentCount },
       });
       return result.checkoutUrl;
     } catch (error) {

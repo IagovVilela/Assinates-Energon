@@ -27,12 +27,14 @@ export async function contractAction(formData: FormData) {
   if (!can(user, "subscription.contract")) {
     return;
   }
+  const rawInstallments = Number(formData.get("installmentCount") ?? 1);
   let url: string;
   try {
     url = await startCheckout({
       company: user.company,
       planId: String(formData.get("planId") ?? ""),
       actorId: user.id,
+      installmentCount: Number.isFinite(rawInstallments) ? rawInstallments : 1,
     });
   } catch (error) {
     log("error", "checkout.failed", {

@@ -143,6 +143,7 @@ export function PlanForm({
     description: string;
     type: "RECURRING" | "ONE_TIME";
     interval: "MONTH" | "YEAR" | null;
+    maxInstallments?: number;
     active: boolean;
     prices: { currency: string; amountMinor: number }[];
   };
@@ -152,6 +153,7 @@ export function PlanForm({
   const planType = useTranslations("planType");
   const interval = useTranslations("interval");
   const [state, action, pending] = useActionState(savePlanAction, undefined);
+  const [planKind, setPlanKind] = useState<"RECURRING" | "ONE_TIME">(plan?.type ?? "RECURRING");
   const amount = (code: string) => plan?.prices.find((price) => price.currency === code)?.amountMinor ?? 0;
   const [brl, setBrl] = useState(amount("BRL") ? maskMoney(String(amount("BRL"))) : "");
   const [usd, setUsd] = useState(amount("USD") ? maskMoney(String(amount("USD"))) : "");
@@ -165,18 +167,37 @@ export function PlanForm({
       <label>{fields("description")}<textarea name="description" defaultValue={plan?.description} required /></label>
       <label>
         {fields("type")}
-        <select name="type" defaultValue={plan?.type ?? "RECURRING"}>
+        <select
+          name="type"
+          value={planKind}
+          onChange={(event) => setPlanKind(event.target.value as "RECURRING" | "ONE_TIME")}
+        >
           <option value="RECURRING">{planType("RECURRING")}</option>
           <option value="ONE_TIME">{planType("ONE_TIME")}</option>
         </select>
       </label>
-      <label>
-        {fields("interval")}
-        <select name="interval" defaultValue={plan?.interval ?? "MONTH"}>
-          <option value="MONTH">{interval("MONTH")}</option>
-          <option value="YEAR">{interval("YEAR")}</option>
-        </select>
-      </label>
+      {planKind === "RECURRING" ? (
+        <label>
+          {fields("interval")}
+          <select name="interval" defaultValue={plan?.interval ?? "MONTH"}>
+            <option value="MONTH">{interval("MONTH")}</option>
+            <option value="YEAR">{interval("YEAR")}</option>
+          </select>
+        </label>
+      ) : (
+        <label>
+          {fields("maxInstallments")}
+          <input
+            name="maxInstallments"
+            type="number"
+            min={1}
+            max={24}
+            defaultValue={plan?.maxInstallments ?? 1}
+            required
+          />
+          <span className="mt-1 block text-xs text-slate-600">{t("maxInstallmentsHint")}</span>
+        </label>
+      )}
       <label>
         BRL — Real
         <MaskedInput

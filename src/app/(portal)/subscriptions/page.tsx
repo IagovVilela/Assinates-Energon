@@ -2,10 +2,10 @@ export const instant = false;
 
 import { getTranslations } from "next-intl/server";
 
-import { formatMoney } from "@/lib/money";
+import { ContractPlanForm } from "@/components/portal-forms";
+import { formatMoney, installmentAmountMinor } from "@/lib/money";
 import { localeTag } from "@/lib/locale";
 import { prisma } from "@/lib/prisma";
-import { contractAction } from "@/server/actions/portal-actions";
 import { requireCustomer } from "@/server/current-user";
 import { can } from "@/server/permissions";
 
@@ -71,16 +71,31 @@ export default async function SubscriptionsPage({
             if (!price) {
               return null;
             }
+            const maxInstallments = plan.type === "ONE_TIME" ? Math.max(1, plan.maxInstallments) : 1;
             return (
               <article key={plan.id} className="card">
                 <h3 className="font-semibold">{plan.name}</h3>
                 <p className="mt-1 text-sm text-slate-600">{plan.description}</p>
                 <p className="mt-2">{formatMoney(price.amountMinor, price.currency, locale)}</p>
+                {maxInstallments > 1 ? (
+                  <p className="mt-1 text-sm text-slate-600">
+                    {t("subscriptions.upToInstallments", {
+                      count: maxInstallments,
+                      amount: formatMoney(
+                        installmentAmountMinor(price.amountMinor, maxInstallments),
+                        price.currency,
+                        locale,
+                      ),
+                    })}
+                  </p>
+                ) : null}
                 {can(user, "subscription.contract") ? (
-                  <form action={contractAction} className="mt-3">
-                    <input type="hidden" name="planId" value={plan.id} />
-                    <button type="submit">{t("subscriptions.contract")}</button>
-                  </form>
+                  <ContractPlanForm
+                    planId={plan.id}
+                    amountMinor={price.amountMinor}
+                    currency={price.currency}
+                    maxInstallments={maxInstallments}
+                  />
                 ) : null}
               </article>
             );

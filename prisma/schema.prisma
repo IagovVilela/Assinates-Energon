@@ -201,15 +201,16 @@ model LoginAttempt {
 }
 
 model Plan {
-  id              String           @id @default(cuid())
-  name            String
-  description     String
-  type            PlanType
-  interval        BillingInterval?
-  active          Boolean          @default(true)
-  stripeProductId String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id               String           @id @default(cuid())
+  name             String
+  description      String
+  type             PlanType
+  interval         BillingInterval?
+  active           Boolean          @default(true)
+  maxInstallments  Int              @default(1)
+  stripeProductId  String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
   prices        PlanPrice[]
   subscriptions Subscription[]

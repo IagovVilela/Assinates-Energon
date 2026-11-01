@@ -90,6 +90,7 @@ export async function savePlanAction(_state: FormState, formData: FormData): Pro
     description: formData.get("description"),
     type: formData.get("type"),
     interval: formData.get("interval") || undefined,
+    maxInstallments: formData.get("maxInstallments") || 1,
     brl: formData.get("brl") || 0,
     usd: formData.get("usd") || 0,
     eur: formData.get("eur") || 0,
@@ -112,6 +113,7 @@ export async function savePlanAction(_state: FormState, formData: FormData): Pro
     description: parsed.data.description,
     type: parsed.data.type,
     interval: parsed.data.type === "RECURRING" ? parsed.data.interval : null,
+    maxInstallments: parsed.data.type === "ONE_TIME" ? parsed.data.maxInstallments : 1,
     active: parsed.data.active,
   };
   const plan = planId

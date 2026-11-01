@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "start": "next start -H 0.0.0.0",
+    "start": "prisma migrate deploy && next start -H 0.0.0.0",
     "lint": "eslint",
     "test": "vitest run",
     "worker": "node --env-file=.env --import tsx src/server/jobs/worker.ts",

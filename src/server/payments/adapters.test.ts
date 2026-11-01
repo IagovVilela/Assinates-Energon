@@ -68,7 +68,70 @@ describe("stripe adapter", () => {
   });
 });
 
+describe("stripe adapter installments", () => {
+  it("creates a temporary subscription checkout for multiple installments", async () => {
+    const create = vi.fn(async () => ({ id: "cs_1", url: "https://stripe.example/pay" }));
+    const adapter = createStripeAdapter(
+      { checkout: { sessions: { create } } } as never,
+      "whsec",
+    );
+    const result = await adapter.createOneTimeCharge({
+      localInvoiceId: "inv_1",
+      customerExternalId: "cus_1",
+      amountMinor: 300_000,
+      currency: "USD",
+      description: "Produto",
+      installmentCount: 10,
+      successUrl: "https://app.example/ok",
+      cancelUrl: "https://app.example/no",
+    });
+    expect(result.checkoutUrl).toBe("https://stripe.example/pay");
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: "subscription",
+        line_items: [
+          expect.objectContaining({
+            price_data: expect.objectContaining({
+              unit_amount: 30_000,
+              recurring: { interval: "month" },
+            }),
+          }),
+        ],
+        subscription_data: expect.objectContaining({
+          metadata: expect.objectContaining({ installmentCount: "10" }),
+        }),
+      }),
+    );
+  });
+});
+
 describe("asaas adapter", () => {
+  it("sends installmentCount on one-time charges", async () => {
+    const fetchImpl = vi.fn(async (_url: string, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body));
+      expect(body.installmentCount).toBe(6);
+      expect(body.value).toBe(300);
+      return Response.json({ id: "pay_1", invoiceUrl: "https://asaas.example/pay" });
+    });
+    const adapter = createAsaasAdapter({
+      apiKey: "key",
+      baseUrl: "https://api-sandbox.asaas.com/v3",
+      webhookToken: "token",
+      fetchImpl,
+    });
+    const checkout = await adapter.createOneTimeCharge({
+      localInvoiceId: "inv_1",
+      customerExternalId: "cus",
+      amountMinor: 30_000,
+      currency: "BRL",
+      description: "Produto",
+      installmentCount: 6,
+      successUrl: "https://app.example/ok",
+      cancelUrl: "https://app.example/no",
+    });
+    expect(checkout.checkoutUrl).toBe("https://asaas.example/pay");
+  });
+
   it("creates a hosted subscription and does not invent a product id", async () => {
     const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
       if (String(url).endsWith("/subscriptions") && init?.method === "POST") {
